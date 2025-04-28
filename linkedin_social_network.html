@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 800px;
+                 background-color: white;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "black"}, "id": "Simerpreet (Simer) Rayat", "label": "Simerpreet (Simer) Rayat", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "James Batara", "label": "James Batara", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Annika Azarcon", "label": "Annika Azarcon", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Brejana Creavalle", "label": "Brejana Creavalle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Diana Prior", "label": "Diana Prior", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Nadine Arielle Gamboa", "label": "Nadine Arielle Gamboa", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Gabriella Christo S.", "label": "Gabriella Christo S.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Raef Khan", "label": "Raef Khan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Simerpreet Rayat", "label": "Simerpreet Rayat", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Dylan Sato", "label": "Dylan Sato", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Jonathan Bissoon", "label": "Jonathan Bissoon", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Chukwuka Okwusiuno", "label": "Chukwuka Okwusiuno", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Shaelyn Maximo", "label": "Shaelyn Maximo", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Meaghan Blyth", "label": "Meaghan Blyth", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Charlene Esquivel", "label": "Charlene Esquivel", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Dhan Narula", "label": "Dhan Narula", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Michelle Adun", "label": "Michelle Adun", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Sahib Mann", "label": "Sahib Mann", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Thanh (Harry) Le", "label": "Thanh (Harry) Le", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Gurkeen Maan", "label": "Gurkeen Maan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Ashton Dinglasan", "label": "Ashton Dinglasan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Krish Kohli", "label": "Krish Kohli", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Nathaniel Johnson", "label": "Nathaniel Johnson", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Shezan Andrews", "label": "Shezan Andrews", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Chase Hopkins", "label": "Chase Hopkins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Justin Ramos", "label": "Justin Ramos", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Shivansh Khullar", "label": "Shivansh Khullar", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Cara Deloraya", "label": "Cara Deloraya", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Raman Deol", "label": "Raman Deol", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Olivia Campbell", "label": "Olivia Campbell", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Mazin Hannoudi", "label": "Mazin Hannoudi", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Chloe Goodridge", "label": "Chloe Goodridge", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Yasmine Clemente", "label": "Yasmine Clemente", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Isabella Untalan", "label": "Isabella Untalan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Joshua Alilovic", "label": "Joshua Alilovic", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Abirath Shah", "label": "Abirath Shah", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Muhammad Ur-Rehman", "label": "Muhammad Ur-Rehman", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Leanne Manikavasager", "label": "Leanne Manikavasager", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Reeva Gill", "label": "Reeva Gill", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Tyler McFadden", "label": "Tyler McFadden", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Addison Dinglasan", "label": "Addison Dinglasan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Nicholas Bindoo", "label": "Nicholas Bindoo", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Matthew De Guzman", "label": "Matthew De Guzman", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Taha Asad", "label": "Taha Asad", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Nathan Der", "label": "Nathan Der", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Charlize Alang", "label": "Charlize Alang", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Richard Luba", "label": "Richard Luba", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "Mark Touzo", "label": "Mark Touzo", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "Simerpreet (Simer) Rayat", "to": "Brejana Creavalle"}, {"from": "Simerpreet (Simer) Rayat", "to": "Diana Prior"}, {"from": "Simerpreet (Simer) Rayat", "to": "Nadine Arielle Gamboa"}, {"from": "Simerpreet (Simer) Rayat", "to": "Gabriella Christo S."}, {"from": "Simerpreet (Simer) Rayat", "to": "Raef Khan"}, {"from": "Simerpreet (Simer) Rayat", "to": "Simerpreet Rayat"}, {"from": "Simerpreet (Simer) Rayat", "to": "Dylan Sato"}, {"from": "Simerpreet (Simer) Rayat", "to": "Jonathan Bissoon"}, {"from": "Simerpreet (Simer) Rayat", "to": "Chukwuka Okwusiuno"}, {"from": "Simerpreet (Simer) Rayat", "to": "Shaelyn Maximo"}, {"from": "Simerpreet (Simer) Rayat", "to": "Meaghan Blyth"}, {"from": "Simerpreet (Simer) Rayat", "to": "Charlene Esquivel"}, {"from": "Simerpreet (Simer) Rayat", "to": "Dhan Narula"}, {"from": "Simerpreet (Simer) Rayat", "to": "Michelle Adun"}, {"from": "Simerpreet (Simer) Rayat", "to": "Sahib Mann"}, {"from": "Simerpreet (Simer) Rayat", "to": "Thanh (Harry) Le"}, {"from": "Simerpreet (Simer) Rayat", "to": "Gurkeen Maan"}, {"from": "Simerpreet (Simer) Rayat", "to": "Ashton Dinglasan"}, {"from": "Simerpreet (Simer) Rayat", "to": "Krish Kohli"}, {"from": "Simerpreet (Simer) Rayat", "to": "Nathaniel Johnson"}, {"from": "Simerpreet (Simer) Rayat", "to": "James Batara"}, {"from": "Simerpreet (Simer) Rayat", "to": "Shezan Andrews"}, {"from": "Simerpreet (Simer) Rayat", "to": "Chase Hopkins"}, {"from": "Simerpreet (Simer) Rayat", "to": "Justin Ramos"}, {"from": "Simerpreet (Simer) Rayat", "to": "Shivansh Khullar"}, {"from": "Simerpreet (Simer) Rayat", "to": "Cara Deloraya"}, {"from": "Simerpreet (Simer) Rayat", "to": "Raman Deol"}, {"from": "Simerpreet (Simer) Rayat", "to": "Olivia Campbell"}, {"from": "Simerpreet (Simer) Rayat", "to": "Mazin Hannoudi"}, {"from": "Simerpreet (Simer) Rayat", "to": "Chloe Goodridge"}, {"from": "Simerpreet (Simer) Rayat", "to": "Yasmine Clemente"}, {"from": "Simerpreet (Simer) Rayat", "to": "Isabella Untalan"}, {"from": "Simerpreet (Simer) Rayat", "to": "Joshua Alilovic"}, {"from": "Simerpreet (Simer) Rayat", "to": "Abirath Shah"}, {"from": "Simerpreet (Simer) Rayat", "to": "Muhammad Ur-Rehman"}, {"from": "Simerpreet (Simer) Rayat", "to": "Annika Azarcon"}, {"from": "James Batara", "to": "Brejana Creavalle"}, {"from": "James Batara", "to": "Diana Prior"}, {"from": "James Batara", "to": "Nadine Arielle Gamboa"}, {"from": "James Batara", "to": "Dylan Sato"}, {"from": "James Batara", "to": "Jonathan Bissoon"}, {"from": "James Batara", "to": "Simerpreet Rayat"}, {"from": "James Batara", "to": "Shaelyn Maximo"}, {"from": "James Batara", "to": "Michelle Adun"}, {"from": "James Batara", "to": "Dhan Narula"}, {"from": "James Batara", "to": "Nathaniel Johnson"}, {"from": "James Batara", "to": "Raef Khan"}, {"from": "James Batara", "to": "Chase Hopkins"}, {"from": "James Batara", "to": "Justin Ramos"}, {"from": "James Batara", "to": "Cara Deloraya"}, {"from": "James Batara", "to": "Olivia Campbell"}, {"from": "James Batara", "to": "Yasmine Clemente"}, {"from": "James Batara", "to": "Isabella Untalan"}, {"from": "James Batara", "to": "Leanne Manikavasager"}, {"from": "James Batara", "to": "Joshua Alilovic"}, {"from": "James Batara", "to": "Reeva Gill"}, {"from": "James Batara", "to": "Annika Azarcon"}, {"from": "Annika Azarcon", "to": "Tyler McFadden"}, {"from": "Annika Azarcon", "to": "Nadine Arielle Gamboa"}, {"from": "Annika Azarcon", "to": "Yasmine Clemente"}, {"from": "Annika Azarcon", "to": "Addison Dinglasan"}, {"from": "Annika Azarcon", "to": "Brejana Creavalle"}, {"from": "Annika Azarcon", "to": "Diana Prior"}, {"from": "Annika Azarcon", "to": "Gabriella Christo S."}, {"from": "Annika Azarcon", "to": "Raef Khan"}, {"from": "Annika Azarcon", "to": "Simerpreet Rayat"}, {"from": "Annika Azarcon", "to": "Dylan Sato"}, {"from": "Annika Azarcon", "to": "Jonathan Bissoon"}, {"from": "Annika Azarcon", "to": "Chukwuka Okwusiuno"}, {"from": "Annika Azarcon", "to": "Shaelyn Maximo"}, {"from": "Annika Azarcon", "to": "Meaghan Blyth"}, {"from": "Annika Azarcon", "to": "Charlene Esquivel"}, {"from": "Annika Azarcon", "to": "Dhan Narula"}, {"from": "Annika Azarcon", "to": "Nicholas Bindoo"}, {"from": "Annika Azarcon", "to": "Justin Ramos"}, {"from": "Annika Azarcon", "to": "Michelle Adun"}, {"from": "Annika Azarcon", "to": "Matthew De Guzman"}, {"from": "Annika Azarcon", "to": "Gurkeen Maan"}, {"from": "Annika Azarcon", "to": "Ashton Dinglasan"}, {"from": "Annika Azarcon", "to": "Nathaniel Johnson"}, {"from": "Annika Azarcon", "to": "Shezan Andrews"}, {"from": "Annika Azarcon", "to": "Chase Hopkins"}, {"from": "Annika Azarcon", "to": "Taha Asad"}, {"from": "Annika Azarcon", "to": "Muhammad Ur-Rehman"}, {"from": "Annika Azarcon", "to": "Nathan Der"}, {"from": "Annika Azarcon", "to": "Cara Deloraya"}, {"from": "Annika Azarcon", "to": "Raman Deol"}, {"from": "Annika Azarcon", "to": "Charlize Alang"}, {"from": "Annika Azarcon", "to": "Chloe Goodridge"}, {"from": "Annika Azarcon", "to": "Annika Azarcon"}, {"from": "Annika Azarcon", "to": "Olivia Campbell"}, {"from": "Annika Azarcon", "to": "Mazin Hannoudi"}, {"from": "Annika Azarcon", "to": "Richard Luba"}, {"from": "Annika Azarcon", "to": "Mark Touzo"}, {"from": "Annika Azarcon", "to": "Isabella Untalan"}, {"from": "Annika Azarcon", "to": "Leanne Manikavasager"}, {"from": "Annika Azarcon", "to": "Joshua Alilovic"}, {"from": "Annika Azarcon", "to": "Abirath Shah"}, {"from": "Annika Azarcon", "to": "Reeva Gill"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
