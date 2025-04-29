@@ -3,6 +3,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
 import random
+import os
 
 # --- Setup Chrome driver ---
 options = uc.ChromeOptions()
@@ -14,9 +15,7 @@ print("Please log in manually within 60 seconds...")
 time.sleep(60)
 
 # --- Load connection profile URLs ---
-profile_urls = pd.read_csv('linkedin_connection_profiles_TEST.csv')['Profile URL'].dropna().tolist()
-
-edges = []  # Person -> Mutual connections
+profile_urls = pd.read_csv('linkedin_connection_profiles.csv')['Profile URL'].dropna().tolist()
 
 def extract_names(driver, person_name) -> list[str]:
     """Return list of all mutual connection names by navigating pagination."""
@@ -31,7 +30,7 @@ def extract_names(driver, person_name) -> list[str]:
         if not container:
             print("No mutuals container found!")
             break
-
+        ### TODO: FIND DIV WITH CLASS mb1
         # --- Extract names from current page ---
         for span in container.find_all('span'):
             text = span.get_text(strip=True)
@@ -62,10 +61,25 @@ def extract_names(driver, person_name) -> list[str]:
 
     return collected_names
 
-# --- Loop over each connection profile ---
+### --- Loop over each connection profile ---
+SAVE_FILE = 'linkedin_mutual_connections_full.csv'
+BATCH_SIZE = 10
+
+# --- Helper to split list into batches ---
+def batchify(lst, batch_size):
+    for i in range(0, len(lst), batch_size):
+        yield lst[i:i+batch_size]
+
+# --- Initialize output CSV ---
+if not os.path.exists(SAVE_FILE):
+    # Create CSV with headers if it doesn't exist
+    pd.DataFrame(columns=['Person', 'MutualConnection']).to_csv(SAVE_FILE, index=False)
+
+edges = []  # Person -> Mutual connections    
+
 for idx, profile_url in enumerate(profile_urls):
     driver.get(profile_url)
-    time.sleep(random.uniform(4,6)) # WAIT TO LOAD.
+    time.sleep(random.uniform(3,4.5)) # WAIT TO LOAD.
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
@@ -85,7 +99,7 @@ for idx, profile_url in enumerate(profile_urls):
             mutuals_link = 'https://www.linkedin.com' + mutuals_link
         
         driver.get(mutuals_link)
-        time.sleep(random.uniform(4,6))
+        time.sleep(random.uniform(3,4.5))
 
         # --- Extract all mutuals (with pagination) ---
         mutual_names = extract_names(driver, person_name)
@@ -93,18 +107,16 @@ for idx, profile_url in enumerate(profile_urls):
         # --- Save edges ---
         for mutual_name in mutual_names:
             edges.append((person_name, mutual_name))
-
+        
+        print(f"\nScraped {len(mutual_names)} mutuals for {person_name}")
         print(mutual_names)
-        print(f"Scraped {len(mutual_names)} mutuals for {person_name}")
 
     else:
         print(f"No mutuals link found for {person_name}")
 
-    time.sleep(random.uniform(4,6))
-
 # --- Save edges ---
 edges_df = pd.DataFrame(edges, columns=['Person', 'MutualConnection'])
-edges_df.to_csv('linkedin_mutual_connections_full.csv', index=False)
+edges_df.to_csv(SAVE_FILE, mode='a', header=False, index=False)
 
 print("Scraping complete! Saved mutual connections.")
 driver.quit()

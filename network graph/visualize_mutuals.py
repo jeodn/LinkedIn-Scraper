@@ -1,59 +1,52 @@
-import networkx as nx
-import matplotlib.pyplot as plt
 import pandas as pd
+import networkx as nx
 from pyvis.network import Network
 
-# --- Load CSV ---
-df = pd.read_csv('linkedin_mutual_connections_full.csv')  # replace with your real filename
+# --- Load your CSV ---
+df = pd.read_csv('linkedin_mutual_connections_full.csv')
 
-# List of your connections
+# List of all names
 people = pd.concat([df['Person'], df['MutualConnection']]).drop_duplicates().tolist()
-# Known mutual connections (edges between people)
+
+# List of edges
 mutual_connections = list(zip(df['Person'], df['MutualConnection']))
 
+# --- Create a networkx Graph (for community detection) ---
+G = nx.Graph()
+G.add_edges_from(mutual_connections)
 
-# WHICH VISUALIZATION VERSION ?
-VIS_VERSION = "pyvis"  # networkx or pyvis
+# --- Detect communities (friend groups) using greedy modularity ---
+from networkx.algorithms.community import greedy_modularity_communities
 
-if VIS_VERSION == "pyvis":
-    # --- Create PyVis Network ---
-    net = Network(height='800px', width='100%', bgcolor='white', font_color='black')
+communities = list(greedy_modularity_communities(G))
 
-    # Improve physics for nicer layout
-    net.barnes_hut()
+# Map person -> community ID
+community_map = {}
+for idx, community in enumerate(communities):
+    for person in community:
+        community_map[person] = idx
 
-    # Add nodes
-    for person in people:
-        net.add_node(person, label=person, shape='dot', size=10)
+# --- Create PyVis Graph ---
+net = Network(height='800px', width='100%', bgcolor='white', font_color='black')
+net.barnes_hut()
 
-    # Add edges
-    for p1, p2 in mutual_connections:
-        net.add_edge(p1, p2)
+# --- Add nodes ---
+for person in people:
+    degree = G.degree(person)  # Number of connections
 
-    # --- Show the network ---
-    net.show('linkedin_social_network.html')
+    community_id = community_map.get(person, 0)  # Default to 0 if missing
 
-if VIS_VERSION == "networkx":
-    # --- Create the graph ---
-    G = nx.Graph()
+    net.add_node(
+        person,
+        label=person,
+        title=f'{person}\nConnections: {degree}',  # Hover tooltip
+        group=community_id,                         # Cluster group
+        size=10 + degree * 2                        # Bigger if more connected
+    )
 
-    # Add people as nodes
-    for person in people:
-        G.add_node(person)
+# --- Add edges ---
+for p1, p2 in mutual_connections:
+    net.add_edge(p1, p2)
 
-    # Add mutual connections as edges
-    for p1, p2 in mutual_connections:
-        G.add_edge(p1, p2)
-
-    # --- Layout ---
-    pos = nx.spring_layout(G, k=1.0, iterations=100, seed=42)
-
-    # --- Draw ---
-    plt.figure(figsize=(10, 8))
-    nx.draw_networkx_nodes(G, pos, node_color='skyblue', node_size=300)
-    nx.draw_networkx_edges(G, pos, width=1.5, edge_color='gray')
-    nx.draw_networkx_labels(G, pos, font_size=10)
-
-    plt.title('Force-Directed LinkedIn Network', fontsize=18)
-    plt.axis('off')
-    plt.show()
+# --- Save and show ---
+net.show('linkedin_social_network_clustered.html')
