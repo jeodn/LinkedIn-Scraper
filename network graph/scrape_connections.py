@@ -30,24 +30,23 @@ def extract_names(driver, person_name) -> list[str]:
         if not container:
             print("No mutuals container found!")
             break
-        ### TODO: FIND DIV WITH CLASS mb1
-        # --- Extract names from current page ---
-        for span in container.find_all('span'):
-            text = span.get_text(strip=True)
-            if text and (2 <= len(text.split()) <= 3) and not text.lower().startswith('see all') and text not in collected_names and text not in rejected_names:
-                collected_names.append(text)
+
+        # --- Extract names from div.mb1 only ---
+        for mb1_div in container.find_all('div', class_='mb1'):
+            for span in mb1_div.find_all('span'):
+                if span:
+                    text = span.get_text(strip=True)
+                    if text and (2 <= len(text.split()) <= 3) and not text.lower().startswith('see all') and text not in collected_names and text not in rejected_names:
+                        collected_names.append(text)
 
         # --- Try to find the Next button ---
         next_button = container.find('button', attrs={"aria-label": "Next"})
         if next_button:
-            # Check if disabled
             if next_button.has_attr('disabled'):
                 print("Reached last page of mutuals.")
                 break
             else:
-                # Click the Next button using Selenium
                 try:
-                    # Find and click the button in the real DOM (not just HTML)
                     next_button_real = driver.find_element('xpath', '//button[@aria-label="Next" and not(@disabled)]')
                     next_button_real.click()
                     print("Clicked Next. Loading more mutuals...")
@@ -60,6 +59,7 @@ def extract_names(driver, person_name) -> list[str]:
             break
 
     return collected_names
+
 
 ### --- Loop over each connection profile ---
 SAVE_FILE = 'linkedin_mutual_connections_full.csv'
